@@ -126,6 +126,9 @@ case "$ACTION" in
       devbox services start "$SERVICE"
       wait_for_service_ready
     else
+      # If service was started externally (e.g., via `devbox services up`), refcount
+      # will be 0. Increment once to "adopt" the external starter's reference, so the
+      # service stays running when all manage-service.sh callers stop.
       count=$(get_refcount)
       if (( count == 0 )); then
         increment_ref

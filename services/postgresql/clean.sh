@@ -10,7 +10,7 @@
 #   DEVBOX_SCRIPTS_DIR - Base directory for devbox-scripts (required)
 # ------------------------------------------------------------------------------
 
-set -e
+set -euo pipefail
 
 READY_SCRIPT="$DEVBOX_SCRIPTS_DIR/services/postgresql/ready.sh"
 

@@ -15,7 +15,7 @@
 #   DEVBOX_SCRIPTS_DIR - Base directory for devbox-scripts (required)
 # ------------------------------------------------------------------------------
 
-set -e
+set -euo pipefail
 
 # Check if database is already initialized
 if [ -f "$PGDATA/PG_VERSION" ]; then

@@ -9,7 +9,7 @@
 #   KAFKA_BROKERS - Kafka broker address (default: localhost:9092)
 # ------------------------------------------------------------------------------
 
-set -e
+set -euo pipefail
 
 KAFKA_BROKERS="${KAFKA_BROKERS:-localhost:9092}"
 

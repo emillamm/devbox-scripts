@@ -11,6 +11,6 @@
 #   POSTGRES_PORT  - PostgreSQL port (required)
 # ------------------------------------------------------------------------------
 
-set -e
+set -euo pipefail
 
 pg_isready -q -h "$PGHOST" -U "$POSTGRES_USER" -p "$POSTGRES_PORT"

@@ -61,11 +61,13 @@ manage-service.sh clean postgresql
 
 | Variable | Description | Required |
 |----------|-------------|----------|
-| `PGDATA` | Data directory | Yes |
-| `PGHOST` | Socket directory | Yes |
+| `PGDATA` | Data directory | Yes* |
+| `PGHOST` | Socket directory | Yes* |
 | `POSTGRES_USER` | Database user | Yes |
 | `POSTGRES_PORT` | Port number | Yes |
 | `POSTGRES_DATABASE` | Database name (for init) | Yes |
+
+\* `PGDATA` and `PGHOST` are automatically provided by devbox when using the `postgresql` package. You typically don't need to set these manually - they are configured by devbox's internal PostgreSQL setup.
 
 ### Kafka
 

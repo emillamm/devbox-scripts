@@ -10,6 +10,6 @@
 #   POSTGRES_PORT - PostgreSQL port (required)
 # ------------------------------------------------------------------------------
 
-set -e
+set -euo pipefail
 
 exec pg_ctl start -o "-k \"$PGHOST\" -p \"$POSTGRES_PORT\""

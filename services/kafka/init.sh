@@ -13,7 +13,7 @@
 #   KAFKA_CONFIG_TEMPLATE  - Path to kafka.properties template (default: $DEVBOX_PROJECT_ROOT/kafka.properties)
 # ------------------------------------------------------------------------------
 
-set -ex
+set -euo pipefail
 
 KAFKA_BROKERS="${KAFKA_BROKERS:-localhost:9092}"
 KAFKA_HOST="${KAFKA_BROKERS%:*}"

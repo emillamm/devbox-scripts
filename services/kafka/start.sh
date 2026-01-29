@@ -9,7 +9,7 @@
 #   KAFKA_DATA_DIR - Kafka data directory (default: $DEVBOX_PROJECT_ROOT/.devbox/kafka-data)
 # ------------------------------------------------------------------------------
 
-set -e
+set -euo pipefail
 
 KAFKA_DATA_DIR="${KAFKA_DATA_DIR:-$DEVBOX_PROJECT_ROOT/.devbox/kafka-data}"
 KAFKA_CONFIG="$KAFKA_DATA_DIR/server.properties"
