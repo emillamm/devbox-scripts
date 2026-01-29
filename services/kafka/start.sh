@@ -14,7 +14,7 @@ set -e
 KAFKA_DATA_DIR="${KAFKA_DATA_DIR:-$DEVBOX_PROJECT_ROOT/.devbox/kafka-data}"
 KAFKA_CONFIG="$KAFKA_DATA_DIR/server.properties"
 
-if [[ ! -f "$KAFKA_CONFIG" ]]; then
+if [ ! -f "$KAFKA_CONFIG" ]; then
   echo "Error: Kafka config not found at $KAFKA_CONFIG"
   echo "Run the init script first."
   exit 1
