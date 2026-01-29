@@ -65,6 +65,10 @@ manage-service.sh clean postgresql
 
 | Variable | Description | Default |
 |----------|-------------|---------|
+| `KAFKA_HOST` | Kafka host | `localhost` |
+| `KAFKA_PORT` | Kafka broker port | `9092` |
+| `KAFKA_CONTROLLER_PORT` | Kafka controller port | `9093` |
 | `KAFKA_DATA_DIR` | Data directory | `$DEVBOX_PROJECT_ROOT/.devbox/kafka-data` |
 | `KAFKA_CONFIG_TEMPLATE` | Path to kafka.properties template | `$DEVBOX_PROJECT_ROOT/kafka.properties` |
-| `KAFKA_BOOTSTRAP_SERVER` | Bootstrap server address | `localhost:29092` |
+
+The template file should use these placeholders: `__KAFKA_HOST__`, `__KAFKA_PORT__`, `__KAFKA_CONTROLLER_PORT__`, `__KAFKA_DATA_DIR__`

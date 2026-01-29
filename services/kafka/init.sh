@@ -7,23 +7,32 @@
 #   Generates cluster ID and formats storage if not already done.
 #
 # Environment:
-#   KAFKA_DATA_DIR        - Kafka data directory (default: $DEVBOX_PROJECT_ROOT/.devbox/kafka-data)
-#   KAFKA_CONFIG_TEMPLATE - Path to kafka.properties template (default: $DEVBOX_PROJECT_ROOT/kafka.properties)
-#                           Template should use __KAFKA_DATA_DIR__ as placeholder
+#   KAFKA_DATA_DIR         - Kafka data directory (default: $DEVBOX_PROJECT_ROOT/.devbox/kafka-data)
+#   KAFKA_CONFIG_TEMPLATE  - Path to kafka.properties template (default: $DEVBOX_PROJECT_ROOT/kafka.properties)
+#   KAFKA_HOST             - Kafka host (default: localhost)
+#   KAFKA_PORT             - Kafka broker port (default: 9092)
+#   KAFKA_CONTROLLER_PORT  - Kafka controller port (default: 9093)
 # ------------------------------------------------------------------------------
 
 set -ex
 
 KAFKA_DATA_DIR="${KAFKA_DATA_DIR:-$DEVBOX_PROJECT_ROOT/.devbox/kafka-data}"
 KAFKA_CONFIG_TEMPLATE="${KAFKA_CONFIG_TEMPLATE:-$DEVBOX_PROJECT_ROOT/kafka.properties}"
+KAFKA_HOST="${KAFKA_HOST:-localhost}"
+KAFKA_PORT="${KAFKA_PORT:-9092}"
+KAFKA_CONTROLLER_PORT="${KAFKA_CONTROLLER_PORT:-9093}"
 
 KAFKA_CONFIG="$KAFKA_DATA_DIR/server.properties"
 CLUSTER_ID_FILE="$KAFKA_DATA_DIR/cluster_id"
 
 mkdir -p "$KAFKA_DATA_DIR"
 
-# Generate runtime config with actual paths
-sed "s|__KAFKA_DATA_DIR__|$KAFKA_DATA_DIR|g" "$KAFKA_CONFIG_TEMPLATE" > "$KAFKA_CONFIG"
+# Generate runtime config with actual values
+sed -e "s|__KAFKA_DATA_DIR__|$KAFKA_DATA_DIR|g" \
+    -e "s|__KAFKA_HOST__|$KAFKA_HOST|g" \
+    -e "s|__KAFKA_PORT__|$KAFKA_PORT|g" \
+    -e "s|__KAFKA_CONTROLLER_PORT__|$KAFKA_CONTROLLER_PORT|g" \
+    "$KAFKA_CONFIG_TEMPLATE" > "$KAFKA_CONFIG"
 
 # Generate cluster ID if it doesn't exist
 if [ ! -f "$CLUSTER_ID_FILE" ]; then
