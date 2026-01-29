@@ -3,26 +3,26 @@
 # Script: manage-service.sh
 #
 # Description:
-#   Starts or stops a Devbox-managed service with reference counting.
-#   Useful when multiple processes depend on the same service (e.g. PostgreSQL).
-#
-#   - On "start": Increments a usage counter and only starts the service if it's not running.
-#   - On "stop": Decrements the usage counter and only stops the service when it reaches 0.
+#   Manages Devbox services with reference counting and convention-based scripts.
 #
 # Usage:
-#   ./manage-service.sh <start|stop> <service-name>
+#   manage-service.sh <action> <service-name>
+#
+# Actions:
+#   start  - Start the service (with reference counting)
+#   stop   - Stop the service (with reference counting)
+#   init   - Initialize the service
+#   clean  - Clean service data
 #
 # Example:
-#   ./manage-service.sh start postgresql
-#   ./manage-service.sh stop postgresql
+#   manage-service.sh start postgresql
+#   manage-service.sh init kafka
 #
 # Conventions:
-#   - Each service must have a ready.sh script at services/<service-name>/ready.sh
-#   - The ready.sh script should exit 0 if the service is ready, non-zero otherwise
-#   - Reference count is stored in /tmp and cleaned up automatically
-#
-# Environment:
-#   DEVBOX_SCRIPTS_DIR - Base directory for devbox-scripts (default: script's directory)
+#   Each service has a directory at services/<service-name>/ containing:
+#   - ready.sh (required) - Check if service is ready
+#   - init.sh (optional)  - Initialize service
+#   - clean.sh (optional) - Clean service data
 # ------------------------------------------------------------------------------
 
 set -euo pipefail
@@ -36,8 +36,9 @@ ACTION="${1:-}"
 SERVICE="${2:-}"
 REF_FILE="/tmp/devbox-${SERVICE}.refcount"
 
-if [[ -z "$SERVICE" || ( "$ACTION" != "start" && "$ACTION" != "stop" ) ]]; then
-  echo "Usage: $0 <start|stop> <service-name>"
+if [[ -z "$SERVICE" || -z "$ACTION" ]]; then
+  echo "Usage: $0 <action> <service-name>"
+  echo "Actions: start, stop, init, clean"
   exit 1
 fi
 
@@ -48,14 +49,24 @@ if [[ ! -d "$SERVICE_DIR" ]]; then
   exit 1
 fi
 
-# Verify ready.sh exists
-READY_SCRIPT="$SERVICE_DIR/ready.sh"
-if [[ ! -x "$READY_SCRIPT" ]]; then
-  echo "Error: ready.sh not found or not executable at $READY_SCRIPT"
-  exit 1
-fi
+# Run a service script if it exists
+run_service_script() {
+  local script="$SERVICE_DIR/$1.sh"
+  if [[ -x "$script" ]]; then
+    "$script"
+  else
+    echo "Error: $1.sh not found or not executable at $script"
+    exit 1
+  fi
+}
 
-# Make sure the counter file exists and is safe to read/write
+# Check if a service script exists
+has_service_script() {
+  local script="$SERVICE_DIR/$1.sh"
+  [[ -x "$script" ]]
+}
+
+# Reference counting functions
 init_ref_file() {
   if [ ! -f "$REF_FILE" ]; then
     echo 0 > "$REF_FILE"
@@ -84,7 +95,7 @@ get_refcount() {
 }
 
 is_service_started() {
-  "$READY_SCRIPT" >/dev/null 2>&1
+  "$SERVICE_DIR/ready.sh" >/dev/null 2>&1
   return $?
 }
 
@@ -103,31 +114,51 @@ wait_for_service_ready() {
   done
 }
 
-if [[ "$ACTION" == "start" ]]; then
-  if ! is_service_started; then
-    rm -f "$REF_FILE"
-    echo "Starting $SERVICE..."
-    devbox services start "$SERVICE"
-    wait_for_service_ready
-  else
-    # If service is already started and refcount is 0, make sure to set it to 1
-    # so the services isn't terminated by the calling process.
-    count=$(get_refcount)
-    if (( count == 0 )); then
-      increment_ref
+case "$ACTION" in
+  start)
+    if ! has_service_script "ready"; then
+      echo "Error: ready.sh is required for start action"
+      exit 1
     fi
-  fi
-  increment_ref
-elif [[ "$ACTION" == "stop" ]]; then
-  if is_service_started; then
-    decrement_ref
-    count=$(get_refcount)
-    if (( count == 0 )); then
-      echo "Stopping $SERVICE..."
-      devbox services stop "$SERVICE"
+    if ! is_service_started; then
+      rm -f "$REF_FILE"
+      echo "Starting $SERVICE..."
+      devbox services start "$SERVICE"
+      wait_for_service_ready
+    else
+      count=$(get_refcount)
+      if (( count == 0 )); then
+        increment_ref
+      fi
+    fi
+    increment_ref
+    ;;
+  stop)
+    if ! has_service_script "ready"; then
+      echo "Error: ready.sh is required for stop action"
+      exit 1
+    fi
+    if is_service_started; then
+      decrement_ref
+      count=$(get_refcount)
+      if (( count == 0 )); then
+        echo "Stopping $SERVICE..."
+        devbox services stop "$SERVICE"
+        rm -f "$REF_FILE"
+      fi
+    else
       rm -f "$REF_FILE"
     fi
-  else
-    rm -f "$REF_FILE"
-  fi
-fi
+    ;;
+  init)
+    run_service_script "init"
+    ;;
+  clean)
+    run_service_script "clean"
+    ;;
+  *)
+    echo "Unknown action: $ACTION"
+    echo "Valid actions: start, stop, init, clean"
+    exit 1
+    ;;
+esac

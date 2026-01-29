@@ -28,24 +28,26 @@ Set `DEVBOX_SCRIPTS_DIR` to override the default location.
 
 ### manage-service.sh
 
-The main entry point for service lifecycle management:
+The main entry point for service management:
 
 ```bash
-# Start a service (increments reference count)
-manage-service.sh start postgresql
-
-# Stop a service (decrements reference count, stops when count reaches 0)
-manage-service.sh stop postgresql
+manage-service.sh <action> <service>
 ```
 
-### Service Scripts
+Actions:
+- `init` - Initialize service data/configuration
+- `clean` - Remove all service data
+- `start` - Start the service (with reference counting)
+- `stop` - Stop the service (with reference counting)
 
-Each service directory contains:
-
-- `ready.sh` (required) - Check if service is ready to accept connections
-- `start.sh` (optional) - Start command for the service
-- `init.sh` (optional) - Initialize service data/configuration
-- `clean.sh` (optional) - Remove all service data
+Examples:
+```bash
+manage-service.sh init postgresql
+manage-service.sh init kafka
+manage-service.sh start postgresql
+manage-service.sh stop postgresql
+manage-service.sh clean postgresql
+```
 
 ## Environment Variables
 
@@ -61,8 +63,8 @@ Each service directory contains:
 
 ### Kafka
 
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `KAFKA_DATA_DIR` | Data directory | Yes |
-| `KAFKA_CONFIG_TEMPLATE` | Path to kafka.properties template | Yes (for init) |
-| `KAFKA_BOOTSTRAP_SERVER` | Bootstrap server address | No (default: localhost:29092) |
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `KAFKA_DATA_DIR` | Data directory | `$DEVBOX_PROJECT_ROOT/.devbox/kafka-data` |
+| `KAFKA_CONFIG_TEMPLATE` | Path to kafka.properties template | `$DEVBOX_PROJECT_ROOT/kafka.properties` |
+| `KAFKA_BOOTSTRAP_SERVER` | Bootstrap server address | `localhost:29092` |

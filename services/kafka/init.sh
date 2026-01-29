@@ -7,22 +7,15 @@
 #   Generates cluster ID and formats storage if not already done.
 #
 # Environment:
-#   KAFKA_DATA_DIR        - Kafka data directory (required)
-#   KAFKA_CONFIG_TEMPLATE - Path to kafka.properties template (required)
+#   KAFKA_DATA_DIR        - Kafka data directory (default: $DEVBOX_PROJECT_ROOT/.devbox/kafka-data)
+#   KAFKA_CONFIG_TEMPLATE - Path to kafka.properties template (default: $DEVBOX_PROJECT_ROOT/kafka.properties)
 #                           Template should use __KAFKA_DATA_DIR__ as placeholder
 # ------------------------------------------------------------------------------
 
 set -ex
 
-if [[ -z "$KAFKA_DATA_DIR" ]]; then
-  echo "Error: KAFKA_DATA_DIR environment variable is required"
-  exit 1
-fi
-
-if [[ -z "$KAFKA_CONFIG_TEMPLATE" ]]; then
-  echo "Error: KAFKA_CONFIG_TEMPLATE environment variable is required"
-  exit 1
-fi
+KAFKA_DATA_DIR="${KAFKA_DATA_DIR:-$DEVBOX_PROJECT_ROOT/.devbox/kafka-data}"
+KAFKA_CONFIG_TEMPLATE="${KAFKA_CONFIG_TEMPLATE:-$DEVBOX_PROJECT_ROOT/kafka.properties}"
 
 KAFKA_CONFIG="$KAFKA_DATA_DIR/server.properties"
 CLUSTER_ID_FILE="$KAFKA_DATA_DIR/cluster_id"
