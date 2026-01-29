@@ -7,20 +7,20 @@
 #   Generates cluster ID and formats storage if not already done.
 #
 # Environment:
+#   KAFKA_BROKERS          - Kafka broker address (default: localhost:9092)
+#   KAFKA_CONTROLLER_PORT  - Kafka controller port (default: 9093)
 #   KAFKA_DATA_DIR         - Kafka data directory (default: $DEVBOX_PROJECT_ROOT/.devbox/kafka-data)
 #   KAFKA_CONFIG_TEMPLATE  - Path to kafka.properties template (default: $DEVBOX_PROJECT_ROOT/kafka.properties)
-#   KAFKA_HOST             - Kafka host (default: localhost)
-#   KAFKA_PORT             - Kafka broker port (default: 9092)
-#   KAFKA_CONTROLLER_PORT  - Kafka controller port (default: 9093)
 # ------------------------------------------------------------------------------
 
 set -ex
 
+KAFKA_BROKERS="${KAFKA_BROKERS:-localhost:9092}"
+KAFKA_HOST="${KAFKA_BROKERS%:*}"
+KAFKA_PORT="${KAFKA_BROKERS#*:}"
+KAFKA_CONTROLLER_PORT="${KAFKA_CONTROLLER_PORT:-9093}"
 KAFKA_DATA_DIR="${KAFKA_DATA_DIR:-$DEVBOX_PROJECT_ROOT/.devbox/kafka-data}"
 KAFKA_CONFIG_TEMPLATE="${KAFKA_CONFIG_TEMPLATE:-$DEVBOX_PROJECT_ROOT/kafka.properties}"
-KAFKA_HOST="${KAFKA_HOST:-localhost}"
-KAFKA_PORT="${KAFKA_PORT:-9092}"
-KAFKA_CONTROLLER_PORT="${KAFKA_CONTROLLER_PORT:-9093}"
 
 KAFKA_CONFIG="$KAFKA_DATA_DIR/server.properties"
 CLUSTER_ID_FILE="$KAFKA_DATA_DIR/cluster_id"

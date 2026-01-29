@@ -71,8 +71,7 @@ manage-service.sh clean postgresql
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `KAFKA_HOST` | Kafka host | `localhost` |
-| `KAFKA_PORT` | Kafka broker port | `9092` |
+| `KAFKA_BROKERS` | Kafka broker address (host:port) | `localhost:9092` |
 | `KAFKA_CONTROLLER_PORT` | Kafka controller port | `9093` |
 | `KAFKA_DATA_DIR` | Data directory | `$DEVBOX_PROJECT_ROOT/.devbox/kafka-data` |
 | `KAFKA_CONFIG_TEMPLATE` | Path to kafka.properties template | `$DEVBOX_PROJECT_ROOT/kafka.properties` |
