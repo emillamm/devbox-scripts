@@ -24,7 +24,7 @@ Then add to your `devbox.json`:
   "shell": {
     "init_hook": [
       "git submodule update --init --remote devbox-scripts",
-      "source ./devbox-scripts/init.sh"
+      ". ./devbox-scripts/init.sh"
     ]
   }
 }
