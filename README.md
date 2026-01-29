@@ -8,21 +8,27 @@ This repository provides standardized scripts for managing services (PostgreSQL,
 
 ## Installation
 
-Add to your project's `devbox.json` shell init:
+Add as a git submodule:
+
+```bash
+git submodule add git@github.com:emillamm/devbox-scripts.git devbox-scripts
+```
+
+Then add to your `devbox.json`:
 
 ```json
 {
+  "env": {
+    "DEVBOX_SCRIPTS_DIR": "$DEVBOX_PROJECT_ROOT/devbox-scripts"
+  },
   "shell": {
     "init_hook": [
-      "export DEVBOX_SCRIPTS_DIR=\"${DEVBOX_SCRIPTS_DIR:-$DEVBOX_PROJECT_ROOT/../devbox-scripts}\"",
-      "[ -d \"$DEVBOX_SCRIPTS_DIR\" ] || git clone git@github.com:emillamm/devbox-scripts.git \"$DEVBOX_SCRIPTS_DIR\"",
-      "export PATH=\"$DEVBOX_SCRIPTS_DIR:$PATH\""
+      "git submodule update --init --remote devbox-scripts",
+      "source ./devbox-scripts/init.sh"
     ]
   }
 }
 ```
-
-Set `DEVBOX_SCRIPTS_DIR` to override the default location.
 
 ## Usage
 
