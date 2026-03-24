@@ -11,7 +11,7 @@ This repository provides standardized scripts for managing services (PostgreSQL,
 Add as a git submodule:
 
 ```bash
-git submodule add git@github.com:emillamm/devbox-scripts.git devbox-scripts
+git submodule add https://github.com/emillamm/devbox-scripts.git devbox-scripts
 ```
 
 Then add to your `devbox.json`:
